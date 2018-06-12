@@ -157,19 +157,7 @@ module Slather
     def profdata_coverage_dir
       raise StandardError, "The specified build directory (#{self.build_directory}) does not exist" unless File.exists?(self.build_directory)
       dir = nil
-      if self.scheme
-        dir = Dir[File.join(build_directory,"/**/CodeCoverage/#{self.scheme}")].first
-      else
-        dir = Dir[File.join(build_directory,"/**/#{first_product_name}")].first
-      end
-
-      if dir == nil
-        # Xcode 7.3 moved the location of Coverage.profdata
-        dir = Dir[File.join(build_directory,"/**/CodeCoverage")].first
-      end
-
-      if dir == nil && Slather.xcode_version[0] >= 9
-        # Xcode 9 moved the location of Coverage.profdata
+      # Xcode 9 moved the location of Coverage.profdata
         coverage_files = Dir[File.join(build_directory, "/**/ProfileData/*/Coverage.profdata")]
 
         if coverage_files.count == 0
@@ -181,7 +169,6 @@ module Slather
         if coverage_files != nil
           dir = Pathname.new(coverage_files.first).parent()
         end
-      end
 
       raise StandardError, "No coverage directory found." unless dir != nil
       dir
